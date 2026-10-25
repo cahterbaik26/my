@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Aplikasi desktop resmi untuk My",
   "main": "dist/main.js",
-  "author": "Web2App User",
+  "author": "My Team",
   "scripts": {
     "start": "tsc && electron .",
     "build:ts": "tsc",
