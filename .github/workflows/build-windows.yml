@@ -1,0 +1,100 @@
+name: Build Desktop Application (Windows)
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_config_path:
+        description: 'Path ke file konfigurasi proyek'
+        required: false
+        default: 'app-config.json'
+      output_formats:
+        description: 'Format output yang diminta (contoh: exe, msi)'
+        required: false
+        default: 'exe'
+      application_version:
+        description: 'Versi aplikasi yang akan dibuild'
+        required: false
+        default: '1.0.0'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: build-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Validate Configuration File
+        shell: bash
+        run: |
+          CONFIG_FILE="${{ github.event.inputs.project_config_path || 'app-config.json' }}"
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "Error: Configuration file $CONFIG_FILE not found!"
+            exit 1
+          fi
+          echo "Configuration file $CONFIG_FILE found and verified."
+          node -e "
+            const cfg = require('./' + '$CONFIG_FILE');
+            if (!cfg.websiteUrl || !cfg.applicationName) {
+              console.error('Invalid configuration: missing websiteUrl or applicationName');
+              process.exit(1);
+            }
+            console.log('Valid configuration for:', cfg.applicationName, cfg.websiteUrl);
+          "
+
+      - name: Prepare Windows Icon Assets
+        shell: bash
+        run: |
+          if [ -f "scripts/prepare-icons.js" ]; then
+            node scripts/prepare-icons.js --platform win
+          elif [ -f "assets/icon.png" ] && [ ! -f "assets/icon.ico" ]; then
+            echo "Icon PNG exists. Generating Windows assets."
+          fi
+
+      - name: Compile TypeScript
+        run: npm run build:ts
+
+      - name: Build Electron Package (NSIS EXE)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx electron-builder --win nsis --x64
+
+      - name: Verify Generated Artifacts
+        shell: bash
+        run: |
+          echo "Verifying generated Windows binaries..."
+          EXE_COUNT=$(ls -1 release/*.exe 2>/dev/null | wc -l)
+          if [ "$EXE_COUNT" -eq 0 ]; then
+            echo "::error::No .exe installer was generated in release/ directory!"
+            exit 1
+          fi
+          echo "Success! Found generated Windows installer(s):"
+          ls -lh release/*.exe
+
+      - name: Upload Windows Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer-v${{ github.event.inputs.application_version || '1.0.0' }}
+          path: |
+            release/*.exe
+            release/*.msi
+          if-no-files-found: error
+          retention-days: 14
