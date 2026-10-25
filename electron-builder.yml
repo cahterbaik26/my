@@ -1,6 +1,6 @@
 appId: "com.ac.uinponorogo.my.desktop"
 productName: "My"
-copyright: "Copyright © 2026 My"
+copyright: "Copyright © 2026 My Team"
 
 directories:
   output: release
