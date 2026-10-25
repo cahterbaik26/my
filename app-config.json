@@ -6,8 +6,8 @@
   "applicationVersion": "1.0.0",
   "author": "",
   "description": "",
-  "iconSource": "",
-  "themeColor": "#6366f1",
+  "iconSource": "https://www.notion.so/images/favicon.ico",
+  "themeColor": "#000000",
   "window": {
     "width": 1280,
     "height": 800,
@@ -45,7 +45,7 @@
     "name": "my",
     "branch": "main"
   },
-  "id": "proj_1792893588551_govb2",
-  "createdAt": "2026-10-25T01:59:48.551Z",
-  "updatedAt": "2026-10-25T01:59:48.551Z"
+  "id": "proj_1792894354895_sy1tk",
+  "createdAt": "2026-10-25T02:12:34.895Z",
+  "updatedAt": "2026-10-25T02:12:34.895Z"
 }
