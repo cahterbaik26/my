@@ -1,0 +1,51 @@
+{
+  "projectName": "My Desktop App",
+  "websiteUrl": "https://my.uinponorogo.ac.id/",
+  "applicationName": "My",
+  "applicationId": "com.my.desktop",
+  "applicationVersion": "1.0.0",
+  "author": "",
+  "description": "",
+  "iconSource": "",
+  "themeColor": "#6366f1",
+  "window": {
+    "width": 1280,
+    "height": 800,
+    "minWidth": 800,
+    "minHeight": 600,
+    "resizable": true,
+    "fullscreen": false,
+    "showMenuBar": false,
+    "backgroundColor": "#0f172a"
+  },
+  "security": {
+    "httpsOnly": true,
+    "externalLinkPolicy": "system-browser",
+    "allowedDomains": [],
+    "allowPrivateNetworkTargets": false,
+    "enableDevToolsInDev": false
+  },
+  "build": {
+    "windows": {
+      "enabled": true,
+      "formats": [
+        "exe"
+      ]
+    },
+    "macos": {
+      "enabled": true,
+      "formats": [
+        "dmg",
+        "app"
+      ]
+    }
+  },
+  "repository": {
+    "owner": "cahterbaik26",
+    "name": "my",
+    "branch": "main"
+  },
+  "id": "proj_1792893588551_govb2",
+  "createdAt": "2026-10-25T01:59:48.551Z",
+  "updatedAt": "2026-10-25T01:59:48.551Z"
+}
