@@ -2,12 +2,12 @@
   "projectName": "My Desktop App",
   "websiteUrl": "https://my.uinponorogo.ac.id/",
   "applicationName": "My",
-  "applicationId": "com.my.desktop",
+  "applicationId": "com.ac.uinponorogo.my.desktop",
   "applicationVersion": "1.0.0",
   "author": "",
-  "description": "",
-  "iconSource": "https://www.notion.so/images/favicon.ico",
-  "themeColor": "#000000",
+  "description": "Aplikasi desktop resmi untuk My",
+  "iconSource": "https://open.spotifycdn.com/cdn/images/favicon.0f31d2ea.ico",
+  "themeColor": "#1DB954",
   "window": {
     "width": 1280,
     "height": 800,
@@ -27,7 +27,7 @@
   },
   "build": {
     "windows": {
-      "enabled": true,
+      "enabled": false,
       "formats": [
         "exe"
       ]
@@ -45,7 +45,7 @@
     "name": "my",
     "branch": "main"
   },
-  "id": "proj_1792894354895_sy1tk",
-  "createdAt": "2026-10-25T02:12:34.895Z",
-  "updatedAt": "2026-10-25T02:12:34.895Z"
+  "id": "proj_1792896973259_f56iz",
+  "createdAt": "2026-10-25T02:56:13.259Z",
+  "updatedAt": "2026-10-25T02:56:13.259Z"
 }
