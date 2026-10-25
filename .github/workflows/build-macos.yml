@@ -1,0 +1,86 @@
+name: Build Desktop Application (macOS)
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_config_path:
+        description: 'Path ke file konfigurasi proyek'
+        required: false
+        default: 'app-config.json'
+      output_formats:
+        description: 'Format output (app, dmg, pkg)'
+        required: false
+        default: 'dmg,app'
+      application_version:
+        description: 'Versi aplikasi yang akan dibuild'
+        required: false
+        default: '1.0.0'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: build-macos-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Validate Configuration File
+        run: |
+          CONFIG_FILE="${{ github.event.inputs.project_config_path || 'app-config.json' }}"
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "Error: Configuration file $CONFIG_FILE not found!"
+            exit 1
+          fi
+          echo "Configuration file $CONFIG_FILE found and verified."
+
+      - name: Compile TypeScript
+        run: npm run build:ts
+
+      - name: Build macOS Application (DMG and ZIP)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+        run: |
+          npx electron-builder --mac dmg zip --universal
+
+      - name: Verify Generated Artifacts
+        run: |
+          echo "Verifying generated macOS binaries..."
+          mkdir -p release
+          ls -lh release/
+          DMG_COUNT=$(ls -1 release/*.dmg 2>/dev/null | wc -l)
+          ZIP_COUNT=$(ls -1 release/*.zip 2>/dev/null | wc -l)
+          if [ "$DMG_COUNT" -eq 0 ] && [ "$ZIP_COUNT" -eq 0 ]; then
+            echo "::error::No .dmg or .zip artifacts generated in release/!"
+            exit 1
+          fi
+          echo "Verification passed. Artifacts ready for packaging."
+
+      - name: Upload macOS Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-application-v${{ github.event.inputs.application_version || '1.0.0' }}
+          path: |
+            release/*.dmg
+            release/*.zip
+            release/*.pkg
+          if-no-files-found: error
+          retention-days: 14
